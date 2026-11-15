@@ -17,6 +17,9 @@ jobs:
           for v in "" "-DAD_USE_DOUBLE" "-DAD_NO_LIBM" "-DAD_FIXED_POINT"; do
             cc -std=c99 -O2 -Wall -Wextra -Werror -pedantic $v -Iinclude -Itests tests/test_core.c -o t -lm && ./t
           done
+          for v in "" "-DAD_USE_DOUBLE"; do
+            cc -std=c99 -O2 -Wall -Wextra -Werror -pedantic $v -Iinclude/appdimens -Itests tests/test_custom.c -o tc -lm && ./tc
+          done
       - name: core tests (MSVC)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -27,6 +30,10 @@ jobs:
             ./t.exe
             if ($LASTEXITCODE -ne 0) { exit 1 }
           }
+          cl -nologo -TC -W4 -WX -wd4996 -Iinclude/appdimens -Itests tests/test_custom.c -Fe:tc.exe
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          ./tc.exe
+          if ($LASTEXITCODE -ne 0) { exit 1 }
   gtk:
     runs-on: ubuntu-24.04
     strategy:

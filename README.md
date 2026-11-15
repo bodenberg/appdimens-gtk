@@ -77,6 +77,21 @@ desktop), `hdpLw`, `ftsdp` (fit), `logssp`, `sdpPxia`. C shortcuts: `ad_<prefix>
 | device px | `…_px` / `Px` tokens (× scale factor, fractional on GTK ≥ 4.12) |
 | Pango units | `appdimens_scope_pango_size(ad, "ssp", 14)` |
 
+## Custom strategies
+
+Your own scaling rule, shared with every AppDimens platform (same JSON document and text formulas),
+through the C99 single header `appdimens_custom.h`:
+
+```c
+#define ADC_IMPLEMENTATION
+#include "appdimens/appdimens_custom.h"
+adc_load_json(json_text, err, sizeof err);                       /* ids + "default" */
+float pad = adc_dp(adc_get("brand"), appdimens_scope_get_metrics(scope), 16);
+adc_strategy *hud = adc_formula("base * pow(sw / 360, 0.8)", err, sizeof err);
+```
+
+Reproduces the cross-platform 540-case fixture. Details: [docs/CUSTOM.md](docs/CUSTOM.md).
+
 ## Precision, stability, performance
 
 - **Parity**: `tests/test_core.c` checks 10 704 values (12 strategies × 44 slots × 20 screens + tokens + parser) against
