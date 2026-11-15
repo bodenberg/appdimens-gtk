@@ -43,7 +43,7 @@ int main(void) {
         for (int s = 0; s < AD_STRATEGY_COUNT; s++) {
             int32_t q = ad_dp_q(&m, (ad_strategy)s, 0, 100);
             double want = 100 * g->f[s][0];
-            if (fabs_(q - want) > 0.5001) { printf("FAIL fixed %d %d vs %f\n", s, q, want); fails++; }
+            if (fabs_(q - want) > 0.5001) { printf("FAIL fixed %d %d vs %f\n", s, (int)q, want); fails++; }
             checks++;
         }
 #endif
