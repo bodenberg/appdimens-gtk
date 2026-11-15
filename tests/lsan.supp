@@ -1,0 +1,5 @@
+leak:libfontconfig
+leak:libEGL
+leak:libGLX
+leak:libdbus
+leak:libpango

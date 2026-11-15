@@ -1,0 +1,4 @@
+option('gtk', type: 'combo', choices: ['3', '4'], value: '4', description: 'GTK major version')
+option('introspection', type: 'feature', value: 'auto', description: 'Generate GObject Introspection data (PyGObject, GJS, Vala, gtk-rs)')
+option('tests', type: 'boolean', value: true)
+option('examples', type: 'boolean', value: true)

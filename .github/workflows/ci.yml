@@ -1,0 +1,47 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  core:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: core tests (float, double, no-libm, fixed point)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          for v in "" "-DAD_USE_DOUBLE" "-DAD_NO_LIBM" "-DAD_FIXED_POINT"; do
+            cc -std=c99 -O2 -Wall -Wextra -Werror -pedantic $v -Iinclude -Itests tests/test_core.c -o t -lm && ./t
+          done
+      - name: core tests (MSVC)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($v in @("-DAD_FLOAT", "-DAD_USE_DOUBLE", "-DAD_NO_LIBM", "-DAD_FIXED_POINT")) {
+            cl -nologo -TC -W4 -wd4996 $v -Iinclude -Itests tests/test_core.c -Fe:t.exe
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+            ./t.exe
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
+  gtk:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        gtk: ["3", "4"]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y meson ninja-build libgtk-3-dev libgtk-4-dev gobject-introspection libgirepository1.0-dev python3-gi gir1.2-gtk-4.0 gir1.2-gtk-3.0 xvfb
+      - run: meson setup build -Dgtk=${{ matrix.gtk }} -Db_sanitize=address,undefined
+      - run: ninja -C build
+      - run: xvfb-run -a meson test -C build --print-errorlogs
+      - name: "PyGObject smoke test (non-sanitised build, ASan cannot be loaded into python)"
+        run: |
+          meson setup build-gi -Dgtk=${{ matrix.gtk }} -Dtests=false -Dexamples=false && ninja -C build-gi
+          xvfb-run -a env GI_TYPELIB_PATH=build-gi LD_LIBRARY_PATH=build-gi python3 -c "
+          import gi; gi.require_version('Gtk','${{ matrix.gtk }}.0'); gi.require_version('AppDimens','3')
+          from gi.repository import AppDimens
+          s = AppDimens.Scope.new(); assert abs(s.dimen('16sdp', -1) - 16) < 1e-6; print('ok')"
