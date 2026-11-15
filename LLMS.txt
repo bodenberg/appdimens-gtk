@@ -1,0 +1,8 @@
+# appdimens-gtk
+
+> AppDimens for GTK 3.22+ and GTK 4 (C, plus PyGObject/GJS/Vala/gtk-rs via GObject Introspection) and a portable C99 single-header core `appdimens.h` usable by any C/C++ toolkit. Same tokens/math as the AppDimens family. Version 3.2.0.
+
+- [README](README.md) · [Guide](docs/GUIDE.md) · [Skill](skills/appdimens-gtk/SKILL.md)
+- Core: `include/appdimens/appdimens.h` — `ad_metrics_init`, `ad_sdp`, `ad_dp(m, strategy, AD_SLOT(variant, flags), v)`, `ad_parse_token`, `ad_dimen("16sdp")`, `ad_mm`, `ad_resize_fit`; options `AD_USE_DOUBLE`, `AD_NO_LIBM`, `AD_FIXED_POINT`.
+- GTK: `appdimens_scope_new_for_widget`, `appdimens_scope_add_css` (expands `16sdp` in GTK CSS), `appdimens_scope_px`, `appdimens_scope_dimen`, `appdimens_scope_pango_size`, signal `changed`.
+- Hub: https://github.com/bodenberg/appdimens

@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: @AD_LIB@
+Description: AppDimens for GTK — responsive sdp/ssp sizes
+Version: @PROJECT_VERSION@
+Requires: @AD_GTK_PC@
+Libs: -L${libdir} -l@AD_LIB@ -lm
+Cflags: -I${includedir}/appdimens -I${includedir}
