@@ -38,7 +38,7 @@ jobs:
       - run: meson setup build -Dgtk=${{ matrix.gtk }} -Db_sanitize=address,undefined
       - run: ninja -C build
       - run: xvfb-run -a meson test -C build --print-errorlogs
-      - name: PyGObject smoke test (non-sanitised build: ASan cannot be loaded into python)
+      - name: "PyGObject smoke test (non-sanitised build, ASan cannot be loaded into python)"
         run: |
           meson setup build-gi -Dgtk=${{ matrix.gtk }} -Dtests=false -Dexamples=false && ninja -C build-gi
           xvfb-run -a env GI_TYPELIB_PATH=build-gi LD_LIBRARY_PATH=build-gi python3 -c "
