@@ -6,3 +6,5 @@
 - Core: `include/appdimens/appdimens.h` — `ad_metrics_init`, `ad_sdp`, `ad_dp(m, strategy, AD_SLOT(variant, flags), v)`, `ad_parse_token`, `ad_dimen("16sdp")`, `ad_mm`, `ad_resize_fit`; options `AD_USE_DOUBLE`, `AD_NO_LIBM`, `AD_FIXED_POINT`.
 - GTK: `appdimens_scope_new_for_widget`, `appdimens_scope_add_css` (expands `16sdp` in GTK CSS), `appdimens_scope_px`, `appdimens_scope_dimen`, `appdimens_scope_pango_size`, signal `changed`.
 - Hub: https://github.com/bodenberg/appdimens
+
+Family (same tokens and math): appdimens-dynamic (Android), appdimens-sdps/ssps (XML), appdimens-kmp, appdimens-ios, appdimens-flutter, appdimens-react-native, appdimens-web, appdimens-net-binding (.NET), appdimens-qt, appdimens-gtk, appdimens-lvgl, appdimens-roku, appdimens-py, appdimens-games — https://github.com/bodenberg/appdimens · agent skills: https://github.com/bodenberg/appdimens-skills
