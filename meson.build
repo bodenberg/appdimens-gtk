@@ -21,7 +21,7 @@ lib = library(lib_name, 'src/appdimens-gtk.c',
 appdimens_gtk_dep = declare_dependency(link_with: lib, include_directories: inc, dependencies: [gtk_dep, m_dep])
 meson.override_dependency(lib_name, appdimens_gtk_dep)
 
-install_headers('include/appdimens/appdimens.h', 'include/appdimens/appdimens-gtk.h', subdir: 'appdimens')
+install_headers('include/appdimens/appdimens.h', 'include/appdimens/appdimens_custom.h', 'include/appdimens/appdimens-gtk.h', subdir: 'appdimens')
 import('pkgconfig').generate(lib, name: lib_name, description: 'AppDimens for GTK — responsive sdp/ssp sizes',
   requires: gtk_dep, subdirs: ['appdimens', '.'])
 
@@ -40,6 +40,8 @@ if get_option('tests')
     test(v[0], executable('test_' + v[0], 'tests/test_core.c', include_directories: [inc, include_directories('tests')],
          c_args: v[1], dependencies: m_dep))
   endforeach
+  test('custom', executable('test_custom', 'tests/test_custom.c', include_directories: [include_directories('include/appdimens', 'tests')],
+       dependencies: m_dep))
   test('gtk', executable('test_gtk', 'tests/test_gtk.c', dependencies: appdimens_gtk_dep),
        env: ['NO_AT_BRIDGE=1', 'GTK_A11Y=none', 'LSAN_OPTIONS=suppressions=' + meson.current_source_dir() / 'tests' / 'lsan.supp'])
 endif

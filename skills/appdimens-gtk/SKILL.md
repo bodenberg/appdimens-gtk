@@ -19,3 +19,10 @@ description: Use for responsive sizing in GTK 3 / GTK 4 apps (C, PyGObject, GJS,
 
 Don'ts: don't multiply by the scale factor yourself (logical px already); don't use `Px` values in CSS (CSS px are logical);
 don't call `ad_metrics_init` per frame.
+
+## Custom strategies
+
+Only when the project declares `customStrategies` (or the user asks for their own rule): one
+`#define ADC_IMPLEMENTATION` + `#include "appdimens/appdimens_custom.h"`, `adc_load_json(text, err, n)` at start-up, then
+`adc_dp(adc_get("brand"), appdimens_scope_get_metrics(scope), 16)` / `adc_sp(...)`. One-off math: `adc_formula("base * pow(sw / 360, 0.8)", err, n)`. Never invent
+ids; not available in `AD_FIXED_POINT` builds. Reference: `docs/CUSTOM.md`.
