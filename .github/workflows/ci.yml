@@ -11,15 +11,22 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
       - name: core tests (float, double, no-libm, fixed point)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           for v in "" "-DAD_USE_DOUBLE" "-DAD_NO_LIBM" "-DAD_FIXED_POINT"; do
-            if [ "$RUNNER_OS" = "Windows" ]; then
-              cl /nologo /TC /W4 /WX /wd4996 $v /Iinclude /Itests tests/test_core.c /Fe:t.exe && ./t.exe
-            else
-              cc -std=c99 -O2 -Wall -Wextra -Werror -pedantic $v -Iinclude -Itests tests/test_core.c -o t -lm && ./t
-            fi
+            cc -std=c99 -O2 -Wall -Wextra -Werror -pedantic $v -Iinclude -Itests tests/test_core.c -o t -lm && ./t
           done
+      - name: core tests (MSVC)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($v in @("-DAD_FLOAT", "-DAD_USE_DOUBLE", "-DAD_NO_LIBM", "-DAD_FIXED_POINT")) {
+            cl -nologo -TC -W4 -wd4996 $v -Iinclude -Itests tests/test_core.c -Fe:t.exe
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+            ./t.exe
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
   gtk:
     runs-on: ubuntu-24.04
     strategy:
@@ -31,9 +38,10 @@ jobs:
       - run: meson setup build -Dgtk=${{ matrix.gtk }} -Db_sanitize=address,undefined
       - run: ninja -C build
       - run: xvfb-run -a meson test -C build --print-errorlogs
-      - name: PyGObject smoke test
+      - name: PyGObject smoke test (non-sanitised build: ASan cannot be loaded into python)
         run: |
-          xvfb-run -a env GI_TYPELIB_PATH=build LD_LIBRARY_PATH=build python3 -c "
+          meson setup build-gi -Dgtk=${{ matrix.gtk }} -Dtests=false -Dexamples=false && ninja -C build-gi
+          xvfb-run -a env GI_TYPELIB_PATH=build-gi LD_LIBRARY_PATH=build-gi python3 -c "
           import gi; gi.require_version('Gtk','${{ matrix.gtk }}.0'); gi.require_version('AppDimens','3')
           from gi.repository import AppDimens
           s = AppDimens.Scope.new(); assert abs(s.dimen('16sdp', -1) - 16) < 1e-6; print('ok')"
